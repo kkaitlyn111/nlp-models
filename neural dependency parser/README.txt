@@ -33,3 +33,10 @@ Remove the completed (empty buffer and stack of size 1) parses from unfinished p
 end while
 Return: The dependencies for each (now completed) parse in partial parses.
 
+The feature vector consists of a list of tokens (e.g., the last word in the stack, first word in the buffer, dependent of the second-to-last word in the stack if there is one, etc.). They can be represented as a list of integers w = [w1,w2,...,wm] where m is the number of features and each 0 ≤ wi < |V | is the index of a token in the vocabulary (|V | is the vocabulary size). Then our network looks up an embedding for each word and concatenates them into a single input vector:
+x = [Ew1,...,Ewm] ∈ Rdm where E ∈ R|V |×d is an embedding matrix with each row Ew as the vector for a particular word w with dimension d. We then compute our prediction as:
+
+h = ReLU(xW + b1) l = hU + b2
+yˆ = softmax(l)
+
+where h is referred to as the hidden layer, l is referred to as the logits, yˆ is referred to as the predictions, and ReLU(z) = max(z, 0)). We will train the model to minimize cross-entropy loss: J(θ) = CE(y,yˆ) = −Xyj logyˆj j=1 where yj denotes the jth element of y. To compute the loss for the training set, we average this J(θ) across all training examples.
