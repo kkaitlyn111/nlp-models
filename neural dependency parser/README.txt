@@ -1,37 +1,35 @@
-Welcome to Assignment 2!
+Neural Transition-Based Dependency Parser using PyTorch
 
-We'll be using PyTorch for this assignment. If you're not familiar with PyTorch, or if you would like to review some of the fundamentals of PyTorch, the PyTorch review session is posted on Canvas under Course Videos.  
+A dependency parser analyzes the grammatical structure of a sentence, establishing relationships between
+head words, and words which modify those heads. There are multiple types of dependency parsers,
+including transition-based parsers, graph-based parsers, and feature-based parsers. Your implementation
+will be a transition-based parser, which incrementally builds up a parse one step at a time. At every step
+it maintains a partial parse, which is represented as follows:
+• A stack of words that are currently being processed.
+• A buffer of words yet to be processed.
+• A list of dependencies predicted by the parser.
+Initially, the stack only contains ROOT, the dependencies list is empty, and the buffer contains all words
+of the sentence in order. At each step, the parser applies a transition to the partial parse until its buffer
+is empty and the stack size is 1. The following transitions can be applied:
+• SHIFT: removes the first word from the buffer and pushes it onto the stack.
+• LEFT-ARC: marks the second (second most recently added) item on the stack as a dependent of
+the first item and removes the second item from the stack, adding a first word → second word
+dependency to the dependency list.
+• RIGHT-ARC: marks the first (most recently added) item on the stack as a dependent of the second
+item and removes the first item from the stack, adding a second word → first word dependency to
+the dependency list.
 
-If you want to continue using your cs224n environment from assignment 1 for this assignment, please make sure you have all the dependencies listed in local_env.yml. To do so, please run: 
+On each step, the parser decides among the three transitions using a neural network classifier.
 
-# 1. Activate your old environment:
+Algorithm 1 Minibatch Dependency Parsing
+Input: sentences, a list of sentences to be parsed and model, our model that makes parse decisions
+Initialize partial parses as a list of PartialParses, one for each sentence in sentences
+Initialize unfinished parses as a shallow copy of partial parses
+while unfinished parses is not empty do
+Take the first batch size parses in unfinished parses as a minibatch
+Use the model to predict the next transition for each partial parse in the minibatch
+Perform a parse step on each partial parse in the minibatch with its predicted transition
+Remove the completed (empty buffer and stack of size 1) parses from unfinished parses
+end while
+Return: The dependencies for each (now completed) parse in partial parses.
 
-    conda activate cs224n
-
-# 2. Install docopt
-
-    conda install docopt
-
-# 3. Install pytorch, torchvision, and tqdm
-
-    conda install pytorch torchvision -c pytorch
-    conda install -c anaconda tqdm
-
-
-If you would like to instead create a new environment for this assignment, please run:
-
-# 1. Create an environment with dependencies specified in local_env.yml (note that this can take some time depending on your laptop):
-    
-    conda env create -f local_env.yml
-
-# 2. Activate the new environment:
-    
-    conda activate cs224n_a2
-    
-
-# To deactivate an active environment, use
-    
-    conda deactivate
-
-## No `zip` command for Windows
-If you are using Windows, you may see an error when running the `collect_submission.sh` script. This is because the `zip` command is not available by default on Windows. If you encounter this error, you can try other methods mentioned [here](https://superuser.com/questions/201371/create-zip-folder-from-the-command-line-windows). Alternatively, you can manually zip the Python files.
