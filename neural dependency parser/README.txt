@@ -2,8 +2,8 @@ Neural Transition-Based Dependency Parser using PyTorch
 
 A dependency parser analyzes the grammatical structure of a sentence, establishing relationships between
 head words, and words which modify those heads. There are multiple types of dependency parsers,
-including transition-based parsers, graph-based parsers, and feature-based parsers. Your implementation
-will be a transition-based parser, which incrementally builds up a parse one step at a time. At every step
+including transition-based parsers, graph-based parsers, and feature-based parsers. This implementation
+is a transition-based parser, which incrementally builds up a parse one step at a time. At every step
 it maintains a partial parse, which is represented as follows:
 • A stack of words that are currently being processed.
 • A buffer of words yet to be processed.
